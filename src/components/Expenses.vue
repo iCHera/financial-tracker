@@ -1,5 +1,5 @@
 <script setup>
-    import { compile, computed, ref } from 'vue'    
+    import { computed, ref } from 'vue'    
     import { useTransactionsStore } from '@/stores/transactions';
 
     const store = useTransactionsStore()
@@ -22,13 +22,8 @@
     function addExpenses() {
         const potentialNumber = parseFloat(transactionAmount.value);
 
-        if (!transactionText.value.trim() && transactionAmount.value) { 
-            alert("Заполните все поля.")
-            return;
-        }
-
-        if(isNaN(potentialNumber)) { 
-            alert("Пожалуйста, введите корректную сумму.");
+        if (!transactionText.value.trim() || isNaN(potentialNumber)) { 
+            alert("Пожалуйста, убедитесь, что описание заполнено, а сумма является корректным числом.")
             return;
         }
 
@@ -54,19 +49,14 @@
     function EditValue(ExpensesID) { 
         const potentialNumber = parseFloat(editAmount.value);
 
-        if (!editText.value.trim() || !editAmount.value) {
-            alert("Заполните все поля.")
+        if (!editText.value.trim() || isNaN(potentialNumber)) {
+            alert("Пожалуйста, убедитесь, что описание заполнено, а сумма является корректным числом.")
             return;
         };
 
-        if (isNaN(potentialNumber)) { 
-            alert("Пожалуйста, введите корректную сумму.");
-            return;
-        }
-
         const updateData = { 
             text: editText.value,
-            amount: -Math.abs(parseFloat(editAmount.value))
+            amount: -Math.abs(parseFloat(potentialNumber))
         };
 
         store.updateTransaction(ExpensesID, updateData)
