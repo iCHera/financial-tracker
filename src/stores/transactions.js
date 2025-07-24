@@ -35,6 +35,16 @@ export const useTransactionsStore  = defineStore('transactions', () => {
     })
   }
 
+  function updateTransaction(transactionId, updatedData) { 
+    const currentTransactions = transactions.value 
+
+    const updatedTransactions = currentTransactions.map((transaction) => {
+      if (transaction.id === transactionId) return {... transaction, ... updatedData}
+      else return transaction
+    })
+    transactions.value = updatedTransactions
+  }
+
   //функция удаления транзакции
   function deleteTransaction(transactionID) { 
     transactions.value = transactions.value.filter(t => t.id !== transactionID);
@@ -47,5 +57,6 @@ export const useTransactionsStore  = defineStore('transactions', () => {
     totalExpense,
     addTransaction,
     deleteTransaction,
+    updateTransaction,
    }
 })
