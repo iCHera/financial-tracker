@@ -16,7 +16,7 @@ export const useTransactionsStore  = defineStore('transactions', () => {
   const totalIncome = computed(() => { 
     return transactions.value
     .filter(t => t.amount > 0)
-    .reduce((acc, transactions) => acc + transactions.amountm, 0)
+    .reduce((acc, transactions) => acc + transactions.amount, 0)
   })
 
   // общий расход 
@@ -29,12 +29,14 @@ export const useTransactionsStore  = defineStore('transactions', () => {
   // функция добавление транзакции
   function addTransaction(transactionData) { 
     transactions.value.push({ 
-      id: new Date(),
+      id: Date.now(),
       text: transactionData.text, 
-      amount: transactionData.amount
+      amount: transactionData.amount,
+      date: new Date().toISOString().split('T')[0]
     })
   }
 
+  // функция для изменения транзакции
   function updateTransaction(transactionId, updatedData) { 
     const currentTransactions = transactions.value 
 

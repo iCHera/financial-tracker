@@ -12,11 +12,33 @@
     const editText = ref('')
     const editAmount = ref('')
     const editingId = ref(null);
-    
+
     // фильтрация переменных 
-    const transactions = computed(() => { 
+    const expensesTransactions = computed(() => { 
         return store.transactions.filter(t => t.amount < 0)
     })
+
+    // для даты
+    const groupedTransactions = computed(() => { 
+        return expensesTransactions.value.reduce((group, transaction) => {
+            const date = transaction.date
+
+            if (!group[date]) { 
+                group[date] = []
+            }
+
+            group[date].push(transaction)
+
+            return group
+
+        }, {}) 
+    })
+
+    // форматер даты
+    function formatDate(dateString) {
+        const [year, month, day] = dateString.split('-');
+        return `${day}.${month}.${year}`;
+    }
 
     //функция добавления значений
     function addExpenses() {
@@ -77,7 +99,7 @@
 
 <template>
     <section class="expenses">
-        <h1 class="expenses-sum"> Общая суммая расходов: {{ store.totalExpense }} </h1>
+        <h1 class="expenses-sum"> Общая суммая расходов: <span class="expenses-sum-spend">{{ store.totalExpense }}</span> BYN</h1>
 
             <div class="expenses-table">
                 <input type="number"
@@ -102,42 +124,51 @@
 
             <div class="transactions-div">
                 <h1 class="transactions-text">Транзакции: </h1>
-                    <ul class="transactions-content-ul">
-                        <li v-for="transaction in transactions" :key="transaction.id" class="transactions-content-li"> 
 
-                            <div v-if="editingId === transaction.id" class="edit-form">
-                                
-                                <input type="number"
-                                v-model="editAmount"
-                                class="edit-amount"
-                                placeholder="Введите сумму">
+                <ul class="transactions-content-ul-date">
+                    <li class="transactions-content-li-date" v-for="(transactionsInGroup, date) in groupedTransactions" :key="date">
 
-                                <input type="text"
-                                v-model="editText"
-                                class="edit-text"
-                                placeholder="Введите текст">
-                                
-                                <button @click="EditValue(transaction.id)" class="edit-button-aplya">✓</button>
-                                <button @click="cancelEditing" class="edit-button-cancellation">X</button>
+                        <h1 class="expenses-transion-date">{{ formatDate(date) }}</h1>
 
-                            </div>
+                             <ul class="transactions-content-ul">
+                                <li v-for="transaction in transactionsInGroup" :key="transaction.id" class="transactions-content-li"> 
 
-                            <div v-else class="display-view">
+                                    <div v-if="editingId === transaction.id" class="edit-form">
+                                    
+                                        <input type="number"
+                                        v-model="editAmount"
+                                        class="edit-amount"
+                                        placeholder="Введите сумму">
 
-                                <div class="transactions-content-dev-text">
-                                    <h1 class="transactions-amount-div"> {{ transaction.amount }}</h1>
-                                    <h1 class="transactions-text-div">{{ transaction.text }}</h1>
-                                </div>
+                                        <input type="text"
+                                        v-model="editText"
+                                        class="edit-text"
+                                        placeholder="Введите текст">
+                                        
+                                        <button @click="EditValue(transaction.id)" class="edit-button-aplya">✓</button>
+                                        <button @click="cancelEditing" class="edit-button-cancellation">X</button>
 
-                                <div class="transactions-button-div">
-                                    <button class="button-new-value" @click="startEditing(transaction)">✏️</button>
-                                    <button class="button-delete" @click="deleteExpenses(transaction.id)">X</button>
-                                </div>
+                                    </div>
 
-                            </div>
+                                    <div v-else class="display-view">
 
-                        </li>
-                    </ul>
+                                        <div class="transactions-content-div-text">
+                                            <h1 class="transactions-amount-div"> {{ transaction.amount }} BYN</h1>
+                                            <h1 class="transactions-text-div">{{ transaction.text }}</h1>
+                                        </div>
+
+                                        <div class="transactions-button-div">
+                                            <button class="button-new-value" @click="startEditing(transaction)">✏️</button>
+                                            <button class="button-delete" @click="deleteExpenses(transaction.id)">X</button>
+                                        </div>
+
+                                    </div>
+
+                                    </li>
+                                </ul>
+
+                    </li>
+                </ul>
             </div>
     </section>
 </template>
@@ -155,6 +186,10 @@
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.expenses-sum-spend{ 
+    color: red;
 }
 
 .expenses-sum {
@@ -221,6 +256,32 @@
     color: #444;
     margin-bottom: 10px;
 }
+
+.transactions-content-ul-date {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.transactions-content-li-date {
+    margin-bottom: 30px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #fdfdfd;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.expenses-transion-date {
+    font-size: 18px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 6px;
+}
+
 
 .transactions-content-ul {
     list-style: none;
@@ -298,18 +359,21 @@
 
 .display-view {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: space-between;    
+    gap: 20px;
     width: 100%;
 }
 
-.transactions-content-dev-text {
+.transactions-content-div-text {
     display: flex;
     gap: 20px;
-    align-items: center;
 }
 
 .transactions-text-div {
+    word-break: break-word;
+    white-space: normal;
+    overflow-wrap: break-word;
     font-size: 16px;
     color: #333;
 }
@@ -365,4 +429,73 @@ input[type=number]::-webkit-inner-spin-button {
 input[type=number] {
     -moz-appearance: textfield;
 }
+
+@media (max-width: 600px) {
+    .expenses-table {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .transactions-content-li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .display-view {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .transactions-content-div-text {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .transactions-button-div {
+        justify-content: flex-start;
+    }
+
+    .edit-form {
+        flex-direction: column;
+        align-items: flex-start;
+        align-items: stretch;
+    }
+
+    .edit-amount,
+    .edit-text {
+        width: 100%;
+    }
+
+    .transactions-text-div,
+    .transactions-amount-div {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 400px) {
+    .expenses {
+        padding: 20px;
+    }
+
+    .expenses-sum {
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .expenses-price-input,
+    .expenses-text-input {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .edit-button-aplya,
+    .edit-button-cancellation,
+    .button-delete,
+    .button-new-value {
+        font-size: 12px;
+    }
+}
+
 </style>
