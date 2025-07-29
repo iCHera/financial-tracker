@@ -1,6 +1,7 @@
 <script setup>
     import { computed, ref } from 'vue'    
     import { useTransactionsStore } from '@/stores/transactions';
+    import EditTransactionModal from './EditTransactionModal.vue';
 
     const store = useTransactionsStore()
 
@@ -9,9 +10,7 @@
     const transactionAmount = ref('')
 
     // для изменения записи
-    const editText = ref('')
-    const editAmount = ref('')
-    const editingId = ref(null);
+    const transactionToEdit  = ref(null);
 
     // фильтрация переменных 
     const expensesTransactions = computed(() => { 
@@ -61,38 +60,30 @@
     }
 
     //функция начала изменения
-    function startEditing(transaction) { 
-        editingId.value = transaction.id 
-        editText.value = transaction.text;
-        editAmount.value = transaction.amount;
+    function openEditModal(transaction) { 
+        transactionToEdit.value = { ...transaction}
     }
 
-    // функция изменения значений
-    function EditValue(ExpensesID) { 
-        const potentialNumber = parseFloat(editAmount.value);
+    // закрытие окна
+    function closeEditModal() {
+        transactionToEdit.value = null;
+    }
 
-        if (!editText.value.trim() || isNaN(potentialNumber)) {
+    // функция изменения 
+    function handleUpdateTransaction(updatedData) { 
+
+        const expenseAmount = -Math.abs(updatedData.amount);
+
+        if (!updatedData.text.trim() || isNaN(expenseAmount)) {
             alert("Пожалуйста, убедитесь, что описание заполнено, а сумма является корректным числом.")
             return;
         };
 
-        const updateData = { 
-            text: editText.value,
-            amount: -Math.abs(parseFloat(potentialNumber))
-        };
-
-        store.updateTransaction(ExpensesID, updateData)
-        editingId.value = null;
-    }
-
-    //функция конец изменения
-    function cancelEditing() {
-        editingId.value = null;
-    }
-
-    //функция удаления
-    function deleteExpenses(ExpensesID) { 
-        store.deleteTransaction(ExpensesID)
+        store.updateTransaction(updatedData.id, { 
+            text: updatedData.text,
+            amount: expenseAmount
+        })
+        closeEditModal();
     }
 
 </script> 
@@ -131,35 +122,16 @@
                         <h1 class="expenses-transion-date">{{ formatDate(date) }}</h1>
 
                              <ul class="transactions-content-ul">
-                                <li v-for="transaction in transactionsInGroup" :key="transaction.id" class="transactions-content-li"> 
+                                <li v-for="transaction in transactionsInGroup" 
+                                :key="transaction.id"
+                                class="transactions-content-li"
+                                @click="openEditModal(transaction)"> 
 
-                                    <div v-if="editingId === transaction.id" class="edit-form">
-                                    
-                                        <input type="number"
-                                        v-model="editAmount"
-                                        class="edit-amount"
-                                        placeholder="Введите сумму">
-
-                                        <input type="text"
-                                        v-model="editText"
-                                        class="edit-text"
-                                        placeholder="Введите текст">
-                                        
-                                        <button @click="EditValue(transaction.id)" class="edit-button-aplya">✓</button>
-                                        <button @click="cancelEditing" class="edit-button-cancellation">X</button>
-
-                                    </div>
-
-                                    <div v-else class="display-view">
+                                    <div class="display-view">
 
                                         <div class="transactions-content-div-text">
                                             <h1 class="transactions-amount-div"> {{ transaction.amount }} BYN</h1>
                                             <h1 class="transactions-text-div">{{ transaction.text }}</h1>
-                                        </div>
-
-                                        <div class="transactions-button-div">
-                                            <button class="button-new-value" @click="startEditing(transaction)">✏️</button>
-                                            <button class="button-delete" @click="deleteExpenses(transaction.id)">X</button>
                                         </div>
 
                                     </div>
@@ -171,6 +143,13 @@
                 </ul>
             </div>
     </section>
+
+    <EditTransactionModal
+    v-if="transactionToEdit"
+    :transaction="transactionToEdit"
+    @close="closeEditModal"
+    @save="handleUpdateTransaction"
+    />
 </template>
 
 <style scoped>
@@ -271,6 +250,7 @@
     padding: 20px;
     background-color: #fdfdfd;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
 }
 
 .expenses-transion-date {
@@ -380,6 +360,7 @@
 
 .transactions-amount-div {
     font-size: 16px;
+    white-space: nowrap;
     font-weight: bold;
     color: #e53935;
 }
@@ -442,19 +423,18 @@ input[type=number] {
     }
 
     .display-view {
-        flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
 
     .transactions-content-div-text {
-        flex-direction: column;
         align-items: flex-start;
-        gap: 6px;
+        gap: 20px;
     }
 
     .transactions-button-div {
         justify-content: flex-start;
+        gap: 5px;
     }
 
     .edit-form {
@@ -470,7 +450,7 @@ input[type=number] {
 
     .transactions-text-div,
     .transactions-amount-div {
-        font-size: 14px;
+        font-size: 12px;
     }
 }
 

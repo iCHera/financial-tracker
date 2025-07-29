@@ -1,15 +1,15 @@
 <script setup>
     import { ref, computed } from 'vue'
     import { useTransactionsStore } from '@/stores/transactions';
+    import EditTransactionModal from './EditTransactionModal.vue';
 
     const store = useTransactionsStore()
 
     const transactionAmount = ref('')
     const transactionText = ref('')
-
-    const editID = ref(null)
-    const editText = ref('')
-    const editAmount = ref('')
+        
+    // для изменения записи
+    const transactionToEdit = ref(null);
 
     const incomeTransactions = computed(() => { 
         return store.transactions.filter(t => t.amount > 0)
@@ -40,7 +40,7 @@
         
         const potentialNumber = parseFloat(transactionAmount.value);
 
-        if (!transactionText.value.trim() && isNaN(potentialNumber)) { 
+        if (!transactionText.value.trim() || isNaN(potentialNumber)) { 
             alert("Пожалуйста, убедитесь, что описание заполнено, а сумма является корректным числом.")
             return;
          }
@@ -61,46 +61,33 @@
          transactionText.value = ''
     }
 
-    // функция для удаления транзакции
-    function deleteTransaction(transactionID) { 
-        store.deleteTransaction(transactionID)
+    //функция начала изменения
+    function openEditModal(transaction) { 
+        transactionToEdit.value = { ...transaction}
     }
 
-    // функция для начала изменения
-    function startEdit(transaction) { 
-        editID.value = transaction.id
-        editText.value = transaction.text
-        editAmount.value = transaction.amount
+    // закрытие окна
+    function closeEditModal() {
+        transactionToEdit.value = null;
     }
 
-    // функция изменения
-    function editFunction(transactionID) { 
-        const potentialNumber = parseFloat(editAmount.value);
+    // функция изменения 
+    function handleUpdateTransaction(updatedData) { 
 
-        if (!editText.value.trim() || isNaN(potentialNumber)) {
+        const expenseAmount = Math.abs(updatedData.amount);
+
+        if (!updatedData.text.trim() || isNaN(expenseAmount)) {
             alert("Пожалуйста, убедитесь, что описание заполнено, а сумма является корректным числом.")
             return;
         };
 
-        if (potentialNumber < 0) { 
-            alert(`Доход не может быть отрицальным`)
-            return;
-        }
-
-        const transactionData = { 
-            text: editText.value,
-            amount: potentialNumber
-        }
-
-        store.updateTransaction(transactionID, transactionData)
-        editID.value = null
+        store.updateTransaction(updatedData.id, { 
+            text: updatedData.text,
+            amount: expenseAmount
+        })
+        closeEditModal();
     }
 
-    // функция отмены изменения
-    function cancelEditing() { 
-        editID.value = null
-    }
- 
 </script>
 
 <template>
@@ -139,35 +126,16 @@
                    <h1 class="income-transion-date">{{ formatDate(date) }}</h1>
                     
                     <ul class="income-transion-ul">
-                        <li class="income-transion-li" v-for="transaction in transactionsInGroup" :key="transaction.id">
+                        <li class="income-transion-li"
+                        v-for="transaction in transactionsInGroup"
+                        @click="openEditModal(transaction)"
+                        :key="transaction.id">
 
-                        <div class="income-edit-form" v-if="editID === transaction.id">
-
-                            <input type="number"
-                            placeholder="Введите сумму"
-                            v-model="editAmount"
-                            class="income-edit-form-amout">
-
-                            <input type="text"
-                            placeholder="Введите текст"
-                            v-model="editText"
-                            class="income-edit-form-text">
-
-                            <button @click="editFunction(transaction.id)" class="income-edit-button-aplya">✓</button>
-                            <button @click="cancelEditing" class="income-edit-button-cancellation">X</button>
-
-                        </div>
-
-                        <div class="income-display-view" v-else>
+                        <div class="income-display-view">
 
                             <div class="income-display-view-text">
                                 <h1 class="income-display-view-text-amount">{{ transaction.amount }} BYN</h1>
                                 <h1 class="income-display-view-text-text"> {{ transaction.text }}</h1>
-                            </div>
-
-                            <div class="income-display-view-button">
-                                <button class="income-display-view-button-change" @click="startEdit(transaction)">✏️</button>
-                                <button class="income-display-view-button-remote" @click="deleteTransaction(transaction.id)">X</button>
                             </div>
 
                         </div>
@@ -181,6 +149,13 @@
         </div>
 
     </section>
+
+    <EditTransactionModal
+    v-if="transactionToEdit"
+    :transaction="transactionToEdit"
+    @close="closeEditModal"
+    @save="handleUpdateTransaction"
+    />
 </template>
 
 <style scoped>
@@ -307,6 +282,7 @@
     margin-bottom: 10px;
     border-radius: 10px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
 }
 
 .income-edit-form {
@@ -381,6 +357,7 @@
 
 .income-display-view-text-amount {
     font-size: 16px;
+    white-space: nowrap;
     font-weight: bold;
     color: green;
 }
@@ -469,18 +446,17 @@ input[type=number] {
   }
 
   .income-display-view {
-    flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
 
   .income-display-view-text {
-    flex-direction: column;
     align-items: flex-start;
-    gap: 6px;
+    gap: 20px;
   }
 
   .income-display-view-button {
+    gap: 5px;
     justify-content: flex-start;
   }
 
@@ -516,7 +492,7 @@ input[type=number] {
 
   .income-display-view-text-amount,
   .income-display-view-text-text {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .income-edit-button-aplya,
