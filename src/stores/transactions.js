@@ -4,27 +4,68 @@ import { defineStore } from 'pinia'
 export const useTransactionsStore  = defineStore('transactions', () => {
 
   const transactions = ref([])
+  const accounts = ref([])
+  const activeAccountId = ref(null)
 
-  // общий баланс 
-  const totalBalance = computed(() => { 
-    return transactions.value.reduce((acc, transactions) =>{
-      return acc + transactions.amount
-    }, 0)
+  // посчитанный баланс на всех счетах 
+  const accountsWithBalance = computed(() => {
+    return accounts.value.map((account) => { 
+      const balance = transactions.value
+      .filter(t => t.accountID === account.id)
+      .reduce((acc, t) => acc + t.amount, 0)
+
+      return {...account, balance: balance}
+    })
+  })
+
+  // активный аккаунт
+  const activeAccountData = computed(() => {
+    return accountsWithBalance.value.find(account => account.id === activeAccountId.value)
+  })
+  
+  // активный аккаунт для транзакций
+  const activeAccountTransactions = computed(() => { 
+    if(!activeAccountId.value) return []
+    return transactions.value.filter(t => t.accountID === activeAccountId.value)
+  })
+
+  // общий баланс у активного аккаунта
+  const activeAccountBalance = computed(() => { 
+    return activeAccountTransactions.value.reduce((acc, transactions) => acc + transactions.amount, 0)
   }) 
 
-  // общий доход 
-  const totalIncome = computed(() => { 
-    return transactions.value
+  // общий доход у активного аккаунта
+  const activeAccountIncome = computed(() => { 
+    return activeAccountTransactions.value
     .filter(t => t.amount > 0)
     .reduce((acc, transactions) => acc + transactions.amount, 0)
   })
 
-  // общий расход 
-  const totalExpense = computed(() => { 
-    return transactions.value
+  // общий расход у активного аккаунта
+  const activeAccountExpense = computed(() => { 
+    return activeAccountTransactions.value
     .filter(t => t.amount < 0)
     .reduce((acc, transactions) => acc + transactions.amount, 0)
   })
+
+  // общий расход
+  const totalBalance = computed(() => { 
+    return accountsWithBalance.value.reduce((acc, t) => acc + t.balance, 0)
+  })
+
+  // создание нового аккаунта
+  function addAccount(name, currency) { 
+    accounts.value.push({
+      id: Date.now(), 
+      name: name, 
+      currency: currency,
+    })
+  }
+
+  // изменение выбраного счета
+  function setActiveAccount (accountID) { 
+    activeAccountId.value = accountID
+  }
 
   // функция добавление транзакции
   function addTransaction(transactionData) { 
@@ -32,7 +73,8 @@ export const useTransactionsStore  = defineStore('transactions', () => {
       id: Date.now(),
       text: transactionData.text, 
       amount: transactionData.amount,
-      date: new Date().toISOString().split('T')[0]
+      date: new Date().toISOString().split('T')[0], 
+      accountID: transactionData.accountID,
     })
   }
 
@@ -53,12 +95,24 @@ export const useTransactionsStore  = defineStore('transactions', () => {
   }
 
   return {
+    // State 
     transactions,
+    accounts,
+    activeAccountId,
+
+    // Getters 
     totalBalance,
-    totalIncome,
-    totalExpense,
+    accountsWithBalance,
+    activeAccountBalance,
+    activeAccountIncome,
+    activeAccountExpense,
+    activeAccountData,
+    activeAccountTransactions,
+
     addTransaction,
     deleteTransaction,
     updateTransaction,
+    addAccount,
+    setActiveAccount, 
    }
 })

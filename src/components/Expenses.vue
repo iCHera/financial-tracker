@@ -90,7 +90,7 @@
 
 <template>
     <section class="expenses">
-        <h1 class="expenses-sum"> Общая суммая расходов: <span class="expenses-sum-spend">{{ store.totalExpense }}</span> BYN</h1>
+        <h1 class="expenses-sum"> Общая суммая расходов: <span class="expenses-sum-spend">{{ store.totalExpense }}</span> {{  }}</h1>
 
             <div class="expenses-table">
                 <input type="number"
