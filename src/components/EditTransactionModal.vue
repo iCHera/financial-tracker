@@ -88,7 +88,7 @@
 
 .modal-content h2 {
   font-size: 22px;
-  font-weight: bold;
+  font-weight: 500;
   color: #333;
   margin-bottom: 20px;
   text-align: center;

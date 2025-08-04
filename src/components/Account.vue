@@ -96,7 +96,7 @@
               @change="currencyStore.setMainCurrency($event.target.value)"
               class="currency-select">
 
-              <option v-for="c in currencies" :key="c" :value="c">{{ c }}</option>
+              <option v-for="c in currencies" :key="c" :value="c" class="currency-select-text">{{ c }}</option>
 
           </select>
           </div>
@@ -149,7 +149,7 @@
 
                 <div class="custom-select-wrapper2">
                   <select v-model="selectedCurrency" class="currency-select2">
-                    <option v-for="currency in currencies" :key="currency" :value="currency"> {{ currency }} </option>
+                    <option v-for="currency in currencies" :key="currency" :value="currency" class="currency-select-text"> {{ currency }} </option>
                  </select>
 
                 </div>
@@ -186,8 +186,8 @@
 }
 
 .account-balance {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 500;
   margin-bottom: 20px;
   color: #333;
   white-space: nowrap;
@@ -207,7 +207,7 @@
 
 .balance-info {
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 500;
   color: #333;
 }
 
@@ -225,7 +225,7 @@
   -moz-appearance: none;    
   appearance: none;
   color: black;
-  padding: 8px 30px 8px 12px; 
+  padding: 8px 30px 8px 7px; 
   border: 0px solid #ccc;
   border-radius: 8px;
   background-color: #f9f9f9;
@@ -244,6 +244,7 @@
   background-color: #f9f9f9;
   font-size: 16px;
   cursor: pointer;
+  font-weight: 500;
 }
 
 .currency-select:focus {
@@ -253,7 +254,7 @@
 
 
 .balance {
-  font-weight: bold;
+  font-weight: 500;
 }
 
 .plus {
@@ -266,7 +267,7 @@
 
 .select-account-text{ 
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 500;
   margin-bottom: 15px;
   color: #333;
 }
@@ -283,11 +284,12 @@
 .selecte-balance-name,
 .balance-account {
   font-size: 16px;
+  font-weight: 500;
   color: #444;
 }
 
 .selecte-balance {
-  font-weight: bold;
+  font-weight: 500;
 }
 
 .selecte-currency {
@@ -302,7 +304,7 @@
 
 .other-account-text {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 500;
   margin-bottom: 15px;
   color: #333;
 }
@@ -336,7 +338,7 @@
 }
 
 .other-account-balance {
-  font-weight: bold;
+  font-weight: 500;
   font-size: 16px;
 }
 
@@ -361,7 +363,7 @@
 
 .create-account-text {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 500;
   color: #333;
 }
 

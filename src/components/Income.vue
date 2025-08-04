@@ -177,7 +177,7 @@
 
 .income-sum {
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 500;
     color: #333;
     margin-bottom: 30px;
 }
@@ -237,7 +237,7 @@
 
 .income-transion-text {
     font-size: 20px;
-    font-weight: bold;
+    font-weight: 500;
     color: #444;
     margin-bottom: 10px;
 }
@@ -260,7 +260,7 @@
 
 .income-transion-date {
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 500;
     color: #555;
     margin-bottom: 15px;
     border-bottom: 1px solid #ddd;
@@ -359,11 +359,12 @@
 .income-display-view-text-amount {
     font-size: 16px;
     white-space: nowrap;
-    font-weight: bold;
+    font-weight: 500;
     color: green;
 }
 
 .income-display-view-text-text {
+    font-weight: 500;
     font-size: 16px;
     color: #333;
     word-break: break-word;

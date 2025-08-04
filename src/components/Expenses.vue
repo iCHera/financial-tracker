@@ -174,7 +174,7 @@
 
 .expenses-sum {
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 500;
     color: #333;
     margin-bottom: 30px;
 }
@@ -232,7 +232,7 @@
 
 .transactions-text {
     font-size: 20px;
-    font-weight: bold;
+    font-weight: 500;
     color: #444;
     margin-bottom: 10px;
 }
@@ -256,7 +256,7 @@
 
 .expenses-transion-date {
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 500;
     color: #666;
     margin-bottom: 15px;
     border-bottom: 1px solid #ddd;
@@ -352,6 +352,7 @@
 }
 
 .transactions-text-div {
+    font-weight: 500;
     word-break: break-word;
     white-space: normal;
     overflow-wrap: break-word;
@@ -362,7 +363,7 @@
 .transactions-amount-div {
     font-size: 16px;
     white-space: nowrap;
-    font-weight: bold;
+    font-weight: 500;
     color: #e53935;
 }
 
@@ -452,6 +453,7 @@ input[type=number] {
     .transactions-text-div,
     .transactions-amount-div {
         font-size: 12px;
+        font-weight: 500;
     }
 }
 
