@@ -1,9 +1,11 @@
 <script setup>
     import { useTransactionsStore } from '@/stores/transactions'
-    import {ref, computed, onUpdated} from 'vue'
+    import {ref, computed} from 'vue'
     import EditTransactionModalAccount from './EditTransactionModalAccount.vue'
+    import { useCurrencyStore } from '@/stores/currency';
 
     const store = useTransactionsStore()
+    const currencyStore = useCurrencyStore();
     const name = ref('')
     const button = ref(false)
     const currencies = ref(['BYN', 'RUB', 'USD', 'EUR']);
@@ -75,10 +77,27 @@
 
 <template>
     <section class="account">
-        <h1 class="account-balance">Общий баланс счетов: <span class="balance" 
-            :class="{'plus': store.totalBalance > 0}, {'minus': store.totalBalance < 0}">
-            {{ store.totalBalance.toFixed(2) }}</span>
-        </h1>
+
+        <div class="currency-selector">
+          <div class="balance-info">
+            <span class="account-balance">
+              Общий баланс:
+              <span class="balance" 
+                :class="{'plus': store.totalBalance > 0, 'minus': store.totalBalance < 0}">
+                {{ store.totalBalance.toFixed(2) }}
+              </span>
+            </span>
+          </div>
+
+          <select 
+            id="main-currency"
+            :value="currencyStore.mainCurrency"
+            @change="currencyStore.setMainCurrency($event.target.value)"
+            class="currency-select"
+          >
+            <option v-for="c in currencies" :key="c" :value="c">{{ c }}</option>
+          </select>
+        </div>
 
         <div class="select-accont" @click="openModalWindow">
             <h1 class="selecte-balance-name">Название выбранного счета: {{ store.activeAccountData?.name }}</h1>
@@ -165,9 +184,46 @@
   color: #333;
 }
 
+.currency-selector {
+  background-color: #f9f9f9;
+  padding: 18px 20px;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.balance-info {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.account-balance {
+  white-space: nowrap;
+}
+
+.currency-select {
+  padding: 5px 10px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 0px solid #ccc;
+  transition: border-color 0.3s ease;
+  outline: none;
+  background-color: transparent;
+}
+
+.currency-select:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 4px rgba(76, 175, 80, 0.4);
+}
+
+
 .balance {
   font-weight: bold;
-  margin-left: 10px;
 }
 
 .plus {
@@ -190,13 +246,11 @@
 .selecte-balance-name,
 .balance-account {
   font-size: 16px;
-  margin-bottom: 10px;
   color: #444;
 }
 
 .selecte-balance {
   font-weight: bold;
-  margin-left: 8px;
 }
 
 .selecte-currency {

@@ -1,7 +1,10 @@
 import { ref, computed, watch } from 'vue'
 import { defineStore } from 'pinia'
+import { useCurrencyStore } from './currency';
 
 export const useTransactionsStore = defineStore('transactions', () => {
+
+  const currencyStore = useCurrencyStore();
 
   const STORAGE_KEY = 'financial-tracker-state';
   const savedState = JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -52,9 +55,24 @@ export const useTransactionsStore = defineStore('transactions', () => {
   })
 
   // общий расход
-  const totalBalance = computed(() => { 
-    return accountsWithBalance.value.reduce((acc, t) => acc + t.balance, 0)
-  })
+  const totalBalance = computed(() => {
+      if (Object.keys(currencyStore.rates).length === 0) {
+        return 0; 
+      }
+      
+      return accountsWithBalance.value.reduce((total, account) => {
+        const balance = account.balance;
+        const currency = account.currency;
+
+        const rate = currencyStore.rates[currency];
+
+        if (rate) {
+          return total + (balance / rate);
+        }
+        
+        return total;
+      }, 0);
+    });
 
   // создание нового аккаунта
   function addAccount(name, currency) { 
