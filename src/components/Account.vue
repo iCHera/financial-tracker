@@ -1,6 +1,7 @@
 <script setup>
     import { useTransactionsStore } from '@/stores/transactions'
-    import {ref, computed} from 'vue'
+    import {ref, computed, onUpdated} from 'vue'
+    import EditTransactionModalAccount from './EditTransactionModalAccount.vue'
 
     const store = useTransactionsStore()
     const name = ref('')
@@ -8,7 +9,9 @@
     const currencies = ref(['BYN', 'RUB', 'USD', 'EUR']);
     const selectedCurrency = ref('BYN'); 
 
-    const otherAccounts  = computed(() => { 
+    const transactionToEdit  = ref(null);
+
+    const otherAccounts = computed(() => { 
         return store.accountsWithBalance
         .filter(t => t.id !== store.activeAccountId)
     })
@@ -33,6 +36,41 @@
         hideCreateForm()
     }
 
+    function openModalWindow() { 
+      if (store.activeAccountData) {
+        transactionToEdit.value = {...store.activeAccountData}
+      }
+
+      console.log(`все передалось`)
+    }
+
+    // закрытие модального окна
+    function closeModalWindow() { 
+      transactionToEdit.value = null
+    }
+
+    // сохранение изменений
+    function saveEditModal(updateData) { 
+
+        if (!updateData.name.trim()) {
+            alert("Название счета не может быть пустым.");
+            return;
+        }
+
+        store.updateAccount({ 
+          name: updateData.name,
+          currency: updateData.currency,
+        })
+
+        closeModalWindow()
+    }
+
+    //удаление аккаунта 
+    function deleteAccount() { 
+      store.deleteAccount()
+      closeModalWindow()
+    }
+
 </script>
 
 <template>
@@ -42,7 +80,7 @@
             {{ store.totalBalance.toFixed(2) }}</span>
         </h1>
 
-        <div class="select-accont">
+        <div class="select-accont" @click="openModalWindow">
             <h1 class="selecte-balance-name">Название выбранного счета: {{ store.activeAccountData?.name }}</h1>
 
             <h1 class="balance-account">Баланс выбраного счета: 
@@ -65,7 +103,9 @@
                 >
 
                     <h1 class="other-account-name">{{ account.name }}</h1>
-                    <h1 class="other-account-balance">{{ account.balance.toFixed(2) }}</h1>
+                    <h1 class="other-account-balance" 
+                    :class="{'other-account-balance-plus': account.balance > 0}, 
+                    {'other-account-balance-minus': account.balance <0 }">{{ account.balance.toFixed(2) }} {{ account.currency }} </h1>
 
                 </li>
             </ul>
@@ -99,6 +139,14 @@
         </div>
 
     </section>
+
+    <EditTransactionModalAccount
+    v-if="transactionToEdit"
+    :transaction="transactionToEdit"
+    @close="closeModalWindow"
+    @save="saveEditModal"
+    @delete="deleteAccount"
+    />
 
 </template>
 
@@ -136,6 +184,7 @@
   border-radius: 16px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   margin-bottom: 30px;
+  cursor: pointer;
 }
 
 .selecte-balance-name,
@@ -198,7 +247,14 @@
 .other-account-balance {
   font-weight: bold;
   font-size: 16px;
-  color: #4CAF50;
+}
+
+.other-account-balance-plus{
+    color: #4CAF50;
+}
+
+.other-account-balance-minus  {
+    color: #f44336;
 }
 
 .create-account {

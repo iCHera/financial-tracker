@@ -1,11 +1,14 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { defineStore } from 'pinia'
 
-export const useTransactionsStore  = defineStore('transactions', () => {
+export const useTransactionsStore = defineStore('transactions', () => {
 
-  const transactions = ref([])
-  const accounts = ref([])
-  const activeAccountId = ref(null)
+  const STORAGE_KEY = 'financial-tracker-state';
+  const savedState = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+  const transactions = ref(savedState?.transactions || [])
+  const accounts = ref(savedState?.accounts || [])
+  const activeAccountId = ref(savedState?.activeAccountId || null)
 
   // посчитанный баланс на всех счетах 
   const accountsWithBalance = computed(() => {
@@ -94,6 +97,42 @@ export const useTransactionsStore  = defineStore('transactions', () => {
     transactions.value = transactions.value.filter(t => t.id !== transactionID);
   }
 
+  // удаление аккаунта
+  function deleteAccount() { 
+    const accountIdToDelete = activeAccountId.value
+    if (!accountIdToDelete) return;
+
+    accounts.value = accounts.value.filter(t => t.id !== accountIdToDelete)
+    transactions.value = transactions.value.filter(t => t.accountID !== accountIdToDelete)
+
+    activeAccountId.value = accounts.value.length > 0 ? accounts.value[0].id : null;
+  }
+
+  // обновление аккаунта 
+  function updateAccount(updatedData) {
+    
+    const accountIdToUpdate = activeAccountId.value;
+    if (!accountIdToUpdate) return;
+
+    const accountIndex = accounts.value.findIndex(acc => acc.id === accountIdToUpdate)
+
+    if (accountIndex !== -1) { 
+      accounts.value[accountIndex].name = updatedData.name;
+      accounts.value[accountIndex].currency = updatedData.currency 
+    }
+  }
+
+  // localStorege
+  const entireState = computed(() => ({
+      transactions: transactions.value,
+      accounts: accounts.value,
+      activeAccountId: activeAccountId.value
+  }));
+
+  watch(entireState, (newState) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
+  }, { deep: true });
+
   return {
     // State 
     transactions,
@@ -114,5 +153,7 @@ export const useTransactionsStore  = defineStore('transactions', () => {
     updateTransaction,
     addAccount,
     setActiveAccount, 
+    deleteAccount,
+    updateAccount,
    }
 })

@@ -1,33 +1,35 @@
 <script setup>
-import { ref } from 'vue';
-import { useTransactionsStore } from '@/stores/transactions';
 
-const store = useTransactionsStore()
+  import { ref } from 'vue';
+  import { useTransactionsStore } from '@/stores/transactions';
 
-const props = defineProps({
-  transaction: {
-    type: Object,
-    required: true
-  }
-});
+  const store = useTransactionsStore()
 
-const emit = defineEmits(['close', 'save']);
-
-const editText = ref(props.transaction.text);
-const editAmount = ref(props.transaction.amount);
-const deleteObject = props.transaction.id
-
-function onSave() {
-  emit('save', {
-    ...props.transaction, 
-    text: editText.value,
-    amount: parseFloat(editAmount.value)
+  const props = defineProps({
+    transaction: {
+      type: Object,
+      required: true
+    }
   });
-}
 
-function onDelete() { 
-    store.deleteTransaction(deleteObject)
-}
+  const emit = defineEmits(['close', 'save']);
+
+  const editText = ref(props.transaction.text);
+  const editAmount = ref(props.transaction.amount);
+  const deleteObject = props.transaction.id
+
+  function onSave() {
+    emit('save', {
+      ...props.transaction, 
+      text: editText.value,
+      amount: parseFloat(editAmount.value)
+    });
+  }
+
+  function onDelete() { 
+      store.deleteTransaction(deleteObject)
+  }
+
 </script>
 
 <template>

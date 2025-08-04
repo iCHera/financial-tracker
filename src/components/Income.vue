@@ -12,7 +12,7 @@
     const transactionToEdit = ref(null);
 
     const incomeTransactions = computed(() => { 
-        return store.transactions.filter(t => t.amount > 0)
+        return store.activeAccountTransactions.filter(t => t.amount > 0)
     })
 
     // для даты
@@ -53,6 +53,7 @@
          const transactionData = { 
             text: transactionText.value,
             amount :potentialNumber,
+            accountID: store.activeAccountId,
          }
 
          store.addTransaction(transactionData)
@@ -93,7 +94,7 @@
 <template>
     <section class="income-section">
 
-        <h1 class="income-sum"> Поступление средств: <span class="income-sum-income">{{ store.totalIncome }}</span> BYN</h1>
+        <h1 class="income-sum"> Поступление средств: <span class="income-sum-income">{{ store.totalIncome }}</span> {{ store.activeAccountData?.currency }}</h1>
 
         <div class="div-input">
 
@@ -134,7 +135,7 @@
                         <div class="income-display-view">
 
                             <div class="income-display-view-text">
-                                <h1 class="income-display-view-text-amount">{{ transaction.amount }} BYN</h1>
+                                <h1 class="income-display-view-text-amount">{{ transaction.amount }} {{ store.activeAccountData?.currency }}</h1>
                                 <h1 class="income-display-view-text-text"> {{ transaction.text }}</h1>
                             </div>
 

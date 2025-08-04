@@ -14,7 +14,7 @@
 
     // фильтрация переменных 
     const expensesTransactions = computed(() => { 
-        return store.transactions.filter(t => t.amount < 0)
+        return store.activeAccountTransactions.filter(t => t.amount < 0)
     })
 
     // для даты
@@ -50,7 +50,8 @@
 
         const transactionData = { 
             text: transactionText.value,
-            amount: -potentialNumber 
+            amount: -potentialNumber,
+            accountID: store.activeAccountId
         }
         
         store.addTransaction(transactionData)
@@ -90,7 +91,7 @@
 
 <template>
     <section class="expenses">
-        <h1 class="expenses-sum"> Общая суммая расходов: <span class="expenses-sum-spend">{{ store.totalExpense }}</span> {{  }}</h1>
+        <h1 class="expenses-sum"> Общая суммая расходов: <span class="expenses-sum-spend">{{ store.totalExpense }}</span> {{ store.activeAccountData?.currency }}</h1>
 
             <div class="expenses-table">
                 <input type="number"
@@ -130,7 +131,7 @@
                                     <div class="display-view">
 
                                         <div class="transactions-content-div-text">
-                                            <h1 class="transactions-amount-div"> {{ transaction.amount }} BYN</h1>
+                                            <h1 class="transactions-amount-div"> {{ transaction.amount }} {{ store.activeAccountData?.currency }}</h1>
                                             <h1 class="transactions-text-div">{{ transaction.text }}</h1>
                                         </div>
 
