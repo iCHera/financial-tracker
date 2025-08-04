@@ -89,14 +89,18 @@
             </span>
           </div>
 
-          <select 
-            id="main-currency"
-            :value="currencyStore.mainCurrency"
-            @change="currencyStore.setMainCurrency($event.target.value)"
-            class="currency-select"
-          >
-            <option v-for="c in currencies" :key="c" :value="c">{{ c }}</option>
+          <div class="custom-select-wrapper">
+            <select 
+              id="main-currency"
+              :value="currencyStore.mainCurrency"
+              @change="currencyStore.setMainCurrency($event.target.value)"
+              class="currency-select">
+
+              <option v-for="c in currencies" :key="c" :value="c">{{ c }}</option>
+
           </select>
+          </div>
+
         </div>
 
         <div class="select-accont" @click="openModalWindow">
@@ -206,14 +210,22 @@
   white-space: nowrap;
 }
 
+.custom-select-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .currency-select {
-  padding: 5px 10px;
-  font-size: 16px;
-  border-radius: 10px;
+  -webkit-appearance: none; 
+  -moz-appearance: none;    
+  appearance: none;
+  color: black;
+  padding: 8px 30px 8px 12px; 
   border: 0px solid #ccc;
-  transition: border-color 0.3s ease;
-  outline: none;
-  background-color: transparent;
+  border-radius: 8px;
+  background-color: white;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 .currency-select:focus {
