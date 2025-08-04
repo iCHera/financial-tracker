@@ -40,7 +40,7 @@
         
         const potentialNumber = parseFloat(transactionAmount.value);
 
-        if (!transactionText.value.trim() || isNaN(potentialNumber)) { 
+        if (!transactionText.value.trim() || isNaN(potentialNumber) || potentialNumber === 0) { 
             alert("Пожалуйста, убедитесь, что описание заполнено, а сумма является корректным числом.")
             return;
          }
