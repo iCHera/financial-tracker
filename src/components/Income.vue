@@ -180,6 +180,7 @@
     font-weight: 500;
     color: #333;
     margin-bottom: 30px;
+    text-align: left;
 }
 
 .income-sum-income {
@@ -464,12 +465,12 @@ input[type=number] {
 
   .income-transion-text {
     font-size: 18px;
-    text-align: center;
+    text-align: left;
   }
 
   .income-sum {
     font-size: 20px;
-    text-align: center;
+    text-align: left;
   }
 
   .income-section {

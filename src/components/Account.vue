@@ -231,6 +231,8 @@
   background-color: #f9f9f9;
   font-size: 16px;
   cursor: pointer;
+  font-family: 'Segoe UI Light', 'Helvetica Neue Light', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
 }
 
 .currency-select2{ 
@@ -244,6 +246,7 @@
   background-color: #f9f9f9;
   font-size: 16px;
   cursor: pointer;
+  font-family: 'Segoe UI Light', 'Helvetica Neue Light', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 500;
 }
 

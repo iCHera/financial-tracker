@@ -231,7 +231,7 @@
 }
 
 .transactions-text {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 500;
     color: #444;
     margin-bottom: 10px;
@@ -248,7 +248,7 @@
     margin-bottom: 30px;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
-    padding: 20px;
+    padding: 16px;
     background-color: #fdfdfd;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
     cursor: pointer;
@@ -260,7 +260,7 @@
     color: #666;
     margin-bottom: 15px;
     border-bottom: 1px solid #ddd;
-    padding-bottom: 6px;
+    padding-bottom: 8px;
 }
 
 
@@ -478,6 +478,10 @@ input[type=number] {
     .button-delete,
     .button-new-value {
         font-size: 12px;
+    }
+
+    .expenses-transion-date{ 
+        font-size: 16px;
     }
 }
 
