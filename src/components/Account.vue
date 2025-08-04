@@ -103,10 +103,11 @@
 
         </div>
 
+        <h1 class="select-account-text">Выбранный счет:</h1>
         <div class="select-accont" @click="openModalWindow">
-            <h1 class="selecte-balance-name">Название выбранного счета: {{ store.activeAccountData?.name }}</h1>
+            <h1 class="selecte-balance-name">Название: {{ store.activeAccountData?.name }}</h1>
 
-            <h1 class="balance-account">Баланс выбраного счета: 
+            <h1 class="balance-account">Баланс: 
                 <span class="selecte-balance"
                 :class="{'plus': store.activeAccountBalance > 0}, {'minus': store.activeAccountBalance <0}">
                 {{ store.activeAccountData?.balance.toFixed(2) }}
@@ -146,9 +147,12 @@
 
                 <input type="text" placeholder="Введите название счета" v-model="name">
 
-                <select v-model="selectedCurrency">
+                <div class="custom-select-wrapper2">
+                  <select v-model="selectedCurrency" class="currency-select2">
                     <option v-for="currency in currencies" :key="currency" :value="currency"> {{ currency }} </option>
                  </select>
+
+                </div>
 
                  <div class="create-buttons">
                     <button type="button" class="cancellation-button" @click="hideCreateForm">Отменить</button>
@@ -186,6 +190,7 @@
   font-weight: bold;
   margin-bottom: 20px;
   color: #333;
+  white-space: nowrap;
 }
 
 .currency-selector {
@@ -206,13 +211,13 @@
   color: #333;
 }
 
-.account-balance {
-  white-space: nowrap;
-}
-
 .custom-select-wrapper {
   position: relative;
   display: inline-block;
+}
+
+.custom-select-wrapper2{ 
+  position: relative;
 }
 
 .currency-select {
@@ -223,7 +228,20 @@
   padding: 8px 30px 8px 12px; 
   border: 0px solid #ccc;
   border-radius: 8px;
-  background-color: white;
+  background-color: #f9f9f9;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.currency-select2{ 
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  color: black;
+  padding: 8px 30px 8px 12px;
+  border: 0px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
   font-size: 16px;
   cursor: pointer;
 }
@@ -244,6 +262,13 @@
 
 .minus {
   color: #f44336;
+}
+
+.select-account-text{ 
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
 }
 
 .select-accont {
@@ -413,6 +438,16 @@
 
 .cancellation-button:hover {
   background-color: #d32f2f;
+}
+
+@media (max-width: 600px) { 
+  .account-balance { 
+    font-size: 16px;
+  }
+
+  .currency-select{ 
+    padding: 5px 5px;
+  }
 }
 
 </style>
