@@ -117,7 +117,7 @@
         </div>
         
         <div class="accounts-div">
-            <h1 class="other-account-text">Отсальные счета:</h1>
+            <h1 class="other-account-text">Остальные счета:</h1>
 
             <ul class="other-account-ul">
                 <li class="other-account-li"
