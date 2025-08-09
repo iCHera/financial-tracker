@@ -17,7 +17,12 @@
 
     // для даты
     const groupedTransactions = computed(() => { 
-        return incomeTransactions.value.reduce((gpoup, transaction) => { 
+
+        const sortedTransactions = [...incomeTransactions.value].sort((a, b) => { 
+            return new Date(b.date) - new Date(a.date)
+        })
+
+        return sortedTransactions.reduce((gpoup, transaction) => { 
             const date = transaction.date
             
             if (!gpoup[date])  {
